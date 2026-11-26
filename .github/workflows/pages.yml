@@ -1,8 +1,6 @@
 name: Publish study site
 
 on:
-  release:
-    types: [published]
   workflow_dispatch:
     inputs:
       tag:
@@ -25,7 +23,7 @@ jobs:
       - name: Download and unpack the site
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+          RELEASE_TAG: ${{ inputs.tag }}
         run: |
           args=()
           if [[ -n "$RELEASE_TAG" ]]; then args+=("$RELEASE_TAG"); fi
@@ -36,7 +34,6 @@ jobs:
       - uses: actions/upload-pages-artifact@v4
         with:
           path: site
-          include-hidden-files: true
 
   deploy:
     needs: build
