@@ -1,0 +1,53 @@
+name: Publish study site
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag (leave blank for the latest release)
+        required: false
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Download and unpack the site
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          args=()
+          if [[ -n "$RELEASE_TAG" ]]; then args+=("$RELEASE_TAG"); fi
+          gh release download --repo "$GITHUB_REPOSITORY" --pattern world-model-lab.zip --dir "$RUNNER_TEMP" -- "${args[@]}"
+          unzip -q "$RUNNER_TEMP/world-model-lab.zip" -d site
+          test -s site/index.html
+          test -s site/content/catalog.js
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+          include-hidden-files: true
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.publish.outputs.page_url }}
+    steps:
+      - name: Deploy the site
+        id: publish
+        uses: actions/deploy-pages@v4
