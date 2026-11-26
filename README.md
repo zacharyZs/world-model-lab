@@ -8,4 +8,4 @@
 
 ## 发布新版本
 
-在 GitHub Releases 创建一个新版本，附上名为 `world-model-lab.zip` 的完整站点包。`index.html` 位于压缩包根目录。发布后，GitHub Actions 会自动部署到同一学习网址。
+在 GitHub Releases 创建一个新版本，附上名为 `world-model-lab.zip` 的完整站点包。`index.html` 位于压缩包根目录。发布版本后，打开 [Publish study site](https://github.com/zacharyZs/world-model-lab/actions/workflows/pages.yml)，点击 **Run workflow**，保留 `main` 分支，填写版本标签（例如 `v7`）并运行。部署成功后，同一学习网址会展示所选版本。
